@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react';
 import * as tf from '@tensorflow/tfjs';
 
 export default function Home() {
-  const [modelo, setModelo] = useState<tf.LayersModel | null > (null);
+  // Corrección 1: Definimos tipos explícitos para evitar errores con null/string
+  const [modelo, setModelo] = useState<tf.LayersModel | null>(null);
   const [celsius, setCelsius] = useState('');
-  const [resultado, setResultado] = useState(null);
+  const [resultado, setResultado] = useState<string | null>(null); 
   const [estadoCarga, setEstadoCarga] = useState('Cargando IA...');
 
   // 1. Cargar el modelo al iniciar la página
@@ -25,7 +26,7 @@ export default function Home() {
     cargarModelo();
   }, []);
 
-  // 2. Función para convertir (Ahora se activa con el botón)
+  // 2. Función para convertir
   const convertir = async () => {
     if (!modelo) {
         alert("El modelo aún no ha cargado");
@@ -43,7 +44,9 @@ export default function Home() {
     const inputTensor = tf.tensor2d([valorNumerico], [1, 1]);
     
     // b. Predecir
-    const prediccionTensor = modelo.predict(inputTensor);
+    // CORRECCIÓN PRINCIPAL: Agregamos 'as tf.Tensor'
+    // Esto le asegura a TypeScript que recibiremos un solo tensor, no un array.
+    const prediccionTensor = modelo.predict(inputTensor) as tf.Tensor;
     
     // c. Obtener datos
     const valores = await prediccionTensor.data();
@@ -85,7 +88,7 @@ export default function Home() {
                     />
                 </div>
 
-                {/* --- NUEVO BOTÓN DE CONVERSIÓN --- */}
+                {/* --- BOTÓN DE CONVERSIÓN --- */}
                 <button
                     onClick={convertir}
                     disabled={!modelo || estadoCarga.includes('Error')}
