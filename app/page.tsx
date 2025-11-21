@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import * as tf from '@tensorflow/tfjs';
 
 export default function Home() {
-  const [modelo, setModelo] = useState(null);
+  const [modelo, setModelo] = useState<tf.LayersModel | null > (null);
   const [celsius, setCelsius] = useState('');
   const [resultado, setResultado] = useState(null);
   const [estadoCarga, setEstadoCarga] = useState('Cargando IA...');
